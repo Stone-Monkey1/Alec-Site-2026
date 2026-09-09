@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="alecsite.client/alecsite.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="AlecSite.Server/AlecSite.Server.csproj" />
+</Solution>

@@ -1,0 +1,55 @@
+﻿:root {
+    --main-color: #46f805;
+    --secondary-color: #0d0058;
+}
+p, li, a {
+    font-size: 2.2rem;
+}
+
+.background-secondary-color {
+    background-color: var(--secondary-color)
+}
+
+.text-primary-color {
+    color: var(--main-color);
+}
+
+.space-y-1 {
+    padding: 1rem;
+}
+
+.space-y-2 {
+    padding: 2rem;
+}
+
+.space-y-3 {
+    padding: 3rem;
+}
+
+.space-y-4 {
+    padding: 4rem;
+}
+
+.display-flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.flex-row {
+    flex-direction: row;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.p-5pct {
+    padding: 5%;
+}
