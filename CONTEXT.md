@@ -21,9 +21,25 @@ A site section reachable via a Hotspot. Baseline set: Home, About, Projects, Con
 _Avoid_: page, route
 
 **Ivy**:
-A climbable vertical feature on certain tree trunks in the Nav Scene. Lets the Nav Character move up/down instead of only left/right.
+A climbable vertical feature on certain tree trunks in the Nav Scene. Lets the Nav Character move up/down instead of only left/right. Also grows in the Understory, where it's the way back up into the Nav Scene.
 _Avoid_: vine, ladder
 
+**Understory**:
+The small, fixed-size space the Nav Character falls into through a Hole, overlaying that page's real page copy (e.g. About's `h1`). Identical in layout on every page — same Hole position, same Platforms, same hidden Games Hotspot. Named for the forest layer beneath the canopy, pairing with Ivy/canopy already being used for the Nav Scene's vertical space above.
+_Avoid_: text area, content area, basement
+
+**Hole**:
+A gap in the Nav Scene, at the same position on every page, that drops the Nav Character into the Understory when walked over. Falling is automatic and uncontrolled: no movement input during the drop.
+_Avoid_: pit, trap door, hatch
+
+**Torch**:
+An object the Nav Character automatically picks up while falling through a Hole. Once acquired, it casts a glowing light radius around the Nav Character that reveals Platforms and the Ivy leading back up to the Nav Scene.
+_Avoid_: lamp, light source, lantern
+
+**Platform**:
+One of several sprite objects positioned in the Understory, identical on every page, that the Nav Character lands on and jumps between.
+_Avoid_: ledge, step, block
+
 **Secret Hotspot**:
-A Hotspot deliberately not visually obvious, placed to reward exploration (e.g., up in the canopy, reached by climbing Ivy) rather than shown as a normal nav item. The Games Hotspot is the first of these.
+A Hotspot deliberately not visually obvious, placed to reward exploration rather than shown as a normal nav item. The Games Hotspot is the first of these — it lives in the Understory now (same position on every page), not the canopy/Ivy.
 _Avoid_: hidden button, easter egg

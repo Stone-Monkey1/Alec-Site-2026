@@ -1,0 +1,6 @@
+Add ability to leave map:
+	Add a hole to the map. Which allows people to fall out of the map and into the text area. 
+	There will also be a torch that the monkey can interact with to light up the area. 
+	The torch can also set the workds on fire, which puts a flaming effect on the text area. Eventually making the letters burn away and disappear.
+	There will also need to be a platform that are illuminated in the text area, which the monkey can jump onto to get back into the map, and use to explore the text area.
+	

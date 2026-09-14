@@ -8,18 +8,26 @@ export const NAV_SCENE_CONFIG = {
   sceneWidth: 1536,
   canopyHeight: 200, // headroom used for percentage-based vertical layout
   groundY: 37, // the grassy walking plane — must match spawn.y and the ground Hotspots' y-band
-  step: 60,
+  step: 4,
   ivy: [
-    { id: 'ivy-1', xMin: 980, xMax: 1080, maxHeight: 200 },
+    { id: 'ivy-1', xMin: 795, xMax: 825, maxHeight: 200 },
   ],
   hotspots: [
     { id: 'about', label: 'About', xMin: 60, xMax: 210, yMin: 30, yMax: 70, destination: 'About', path: '/about', secret: false },
     { id: 'projects', label: 'Projects', xMin: 320, xMax: 470, yMin: 30, yMax: 70, destination: 'Projects', path: '/projects', secret: false },
     { id: 'home', label: 'Home', xMin: 720, xMax: 870, yMin: 30, yMax: 70, destination: 'Home', path: '/', secret: false },
     { id: 'contact', label: 'Contact', xMin: 1230, xMax: 1380, yMin: 30, yMax: 70, destination: 'Contact', path: '/contact', secret: false },
-    { id: 'games', label: 'Games', xMin: 980, xMax: 1080, yMin: 150, yMax: 200, destination: 'Games', path: '/games', secret: true },
+    { id: 'games', label: 'Games', xMin: 795, xMax: 825, yMin: 150, yMax: 200, destination: 'Games', path: '/games', secret: true },
   ],
   spawn: { x: 600, y: 37 },
+};
+
+export const KEY_ACTIONS = {
+  ArrowLeft: 'MOVE_LEFT', a: 'MOVE_LEFT', A: 'MOVE_LEFT',
+  ArrowRight: 'MOVE_RIGHT', d: 'MOVE_RIGHT', D: 'MOVE_RIGHT',
+  ArrowUp: 'MOVE_UP', w: 'MOVE_UP', W: 'MOVE_UP',
+  ArrowDown: 'MOVE_DOWN', s: 'MOVE_DOWN', S: 'MOVE_DOWN',
+  Enter: 'INTERACT', ' ': 'INTERACT',
 };
 
 function clamp(v, min, max) {

@@ -8,16 +8,11 @@ import {
   createInitialState,
   findHotspotAt,
   findIvyAt,
+  KEY_ACTIONS,
 } from './navSceneModel';
+import { CHARACTER_SHEET_WIDTH, CHARACTER_FRAME_SIZE } from './characterSprite';
+import { useCharacterAnimation } from './useCharacterAnimation';
 import './navSceneStyle.css';
-
-const KEY_ACTIONS = {
-  ArrowLeft: 'MOVE_LEFT', a: 'MOVE_LEFT', A: 'MOVE_LEFT',
-  ArrowRight: 'MOVE_RIGHT', d: 'MOVE_RIGHT', D: 'MOVE_RIGHT',
-  ArrowUp: 'MOVE_UP', w: 'MOVE_UP', W: 'MOVE_UP',
-  ArrowDown: 'MOVE_DOWN', s: 'MOVE_DOWN', S: 'MOVE_DOWN',
-  Enter: 'INTERACT', ' ': 'INTERACT',
-};
 
 function reducer(state, action) {
   return navSceneReducer(state, action, NAV_SCENE_CONFIG);
@@ -26,6 +21,7 @@ function reducer(state, action) {
 function NavScene() {
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(reducer, NAV_SCENE_CONFIG, createInitialState);
+  const { frame, facing } = useCharacterAnimation(state.x, state.y);
   const stateRef = useRef(state);
   useEffect(() => {
     stateRef.current = state;
@@ -85,19 +81,31 @@ function NavScene() {
                 height: `${((hotspot.yMax - hotspot.yMin) / displayMaxY) * 100}%`,
                 visibility: isDiscovered ? 'visible' : 'hidden',
               }}
-            />
+            >
+              <span className="nav-scene__hotspot-label">{hotspot.label}</span>
+            </div>
           );
         })}
 
-        <img
+        <div
           className="nav-scene__character"
-          src={Stonemonkey}
-          alt="Nav Character"
           style={{
             left: `${(state.x / NAV_SCENE_CONFIG.sceneWidth) * 100}%`,
             bottom: `${(state.y / displayMaxY) * 100}%`,
+            transform: `translate(-50%, 50%) scaleX(${facing === 'left' ? -1 : 1})`,
           }}
-        />
+        >
+          <img
+            className="nav-scene__character-sheet"
+            src={Stonemonkey}
+            alt="Nav Character"
+            style={{
+              width: `${(CHARACTER_SHEET_WIDTH / CHARACTER_FRAME_SIZE) * 100}%`,
+              left: `${-(frame.x / CHARACTER_FRAME_SIZE) * 100}%`,
+              top: `${-(frame.y / CHARACTER_FRAME_SIZE) * 100}%`,
+            }}
+          />
+        </div>
 
         {hotspotHere && (
           <div
