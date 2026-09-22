@@ -9,6 +9,7 @@ export const NAV_SCENE_CONFIG = {
   canopyHeight: 200, // headroom used for percentage-based vertical layout
   groundY: 37, // the grassy walking plane — must match spawn.y and the ground Hotspots' y-band
   step: 4,
+  fallStep: 8, // per-tick descent while falling — faster than a manual climb-down, so gravity reads as a drop rather than another climb
   ivy: [
     { id: 'ivy-1', xMin: 795, xMax: 825, maxHeight: 200 },
   ],
@@ -27,8 +28,15 @@ export const KEY_ACTIONS = {
   ArrowRight: 'MOVE_RIGHT', d: 'MOVE_RIGHT', D: 'MOVE_RIGHT',
   ArrowUp: 'MOVE_UP', w: 'MOVE_UP', W: 'MOVE_UP',
   ArrowDown: 'MOVE_DOWN', s: 'MOVE_DOWN', S: 'MOVE_DOWN',
-  Enter: 'INTERACT', ' ': 'INTERACT',
+  e: 'TOGGLE_CLIMB', E: 'TOGGLE_CLIMB',
+  Enter: 'INTERACT',
 };
+
+// Actions that come from a held-down key rather than a single press.
+// useCharacterAnimation owns continuous dispatch for these (its own timer,
+// not native key-repeat — see MOVE_TICK_INTERVAL_MS), so NavScene's own
+// keydown handler skips them entirely.
+export const MOVE_ACTIONS = new Set(['MOVE_LEFT', 'MOVE_RIGHT', 'MOVE_UP', 'MOVE_DOWN']);
 
 function clamp(v, min, max) {
   return Math.max(min, Math.min(max, v));
@@ -47,6 +55,7 @@ export function createInitialState(config) {
     x: config.spawn.x,
     y: config.spawn.y,
     isClimbing: false,
+    isFalling: false,
     activeIvyId: null,
     discoveredSecret: false,
     visited: [],
@@ -60,8 +69,8 @@ function withMessage(state, message, blocked, patch) {
 }
 
 function moveHorizontal(state, dir, config) {
-  if (state.isClimbing) {
-    return withMessage(state, "Can't move sideways while climbing Ivy — climb down first.", true, {});
+  if (state.isClimbing || state.isFalling) {
+    return withMessage(state, "Can't move sideways while climbing or falling.", true, {});
   }
   const newX = clamp(state.x + dir * config.step, 0, config.sceneWidth);
   if (newX === state.x) {
@@ -71,21 +80,16 @@ function moveHorizontal(state, dir, config) {
 }
 
 function climb(state, dir, config) {
+  if (!state.isClimbing) {
+    return withMessage(state, "Not climbing — press E on Ivy to grab it.", true, {});
+  }
+  const ivy = config.ivy.find((z) => z.id === state.activeIvyId);
   if (dir > 0) {
-    const ivy = state.isClimbing
-      ? config.ivy.find((z) => z.id === state.activeIvyId)
-      : findIvyAt(state.x, config.ivy);
-    if (!ivy) {
-      return withMessage(state, "No Ivy here — can't climb.", true, {});
-    }
     const newY = clamp(state.y + config.step, config.groundY, ivy.maxHeight);
     if (newY === state.y) {
       return withMessage(state, 'Already at the top of the Ivy.', true, {});
     }
-    return withMessage(state, null, false, { y: newY, isClimbing: true, activeIvyId: ivy.id });
-  }
-  if (!state.isClimbing) {
-    return withMessage(state, 'Already on the ground.', true, {});
+    return withMessage(state, null, false, { y: newY });
   }
   const newY = clamp(state.y - config.step, config.groundY, 9999);
   const stillClimbing = newY > config.groundY;
@@ -94,6 +98,31 @@ function climb(state, dir, config) {
     isClimbing: stillClimbing,
     activeIvyId: stillClimbing ? state.activeIvyId : null,
   });
+}
+
+function toggleClimb(state, config) {
+  if (state.isClimbing) {
+    // Letting go above the ground plane means dropping, not just releasing
+    // in place — gravity takes over until fall() clamps back to groundY.
+    const grounded = state.y <= config.groundY;
+    return withMessage(state, null, false, {
+      isClimbing: false,
+      activeIvyId: null,
+      isFalling: !grounded,
+    });
+  }
+  const ivy = findIvyAt(state.x, config.ivy);
+  if (!ivy) {
+    return withMessage(state, "No Ivy here — can't climb.", true, {});
+  }
+  return withMessage(state, null, false, { isClimbing: true, activeIvyId: ivy.id });
+}
+
+function fall(state, config) {
+  if (!state.isFalling) return state;
+  const newY = clamp(state.y - config.fallStep, config.groundY, 9999);
+  const landed = newY <= config.groundY;
+  return withMessage(state, null, false, { y: newY, isFalling: !landed });
 }
 
 function interact(state, config) {
@@ -116,6 +145,8 @@ export function navSceneReducer(state, action, config) {
     case 'MOVE_RIGHT': return moveHorizontal(state, 1, config);
     case 'MOVE_UP': return climb(state, 1, config);
     case 'MOVE_DOWN': return climb(state, -1, config);
+    case 'TOGGLE_CLIMB': return toggleClimb(state, config);
+    case 'FALL_STEP': return fall(state, config);
     case 'INTERACT': return interact(state, config);
     default: return state;
   }

@@ -9,8 +9,9 @@ import {
   findHotspotAt,
   findIvyAt,
   KEY_ACTIONS,
+  MOVE_ACTIONS,
 } from './navSceneModel';
-import { CHARACTER_SHEET_WIDTH, CHARACTER_FRAME_SIZE } from './characterSprite';
+import { CHARACTER_SHEET_WIDTH, CHARACTER_FRAME_WIDTH, CHARACTER_FRAME_HEIGHT } from './characterSprite';
 import { useCharacterAnimation } from './useCharacterAnimation';
 import './navSceneStyle.css';
 
@@ -21,7 +22,7 @@ function reducer(state, action) {
 function NavScene() {
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(reducer, NAV_SCENE_CONFIG, createInitialState);
-  const { frame, facing } = useCharacterAnimation(state.x, state.y);
+  const { frame, facing, jumpOffset } = useCharacterAnimation(state.x, state.y, state.isClimbing, state.isFalling, dispatch);
   const stateRef = useRef(state);
   useEffect(() => {
     stateRef.current = state;
@@ -30,7 +31,7 @@ function NavScene() {
   useEffect(() => {
     function handleKeyDown(event) {
       const actionType = KEY_ACTIONS[event.key];
-      if (!actionType) return;
+      if (!actionType || MOVE_ACTIONS.has(actionType)) return; // held movement is dispatched by useCharacterAnimation's own timer
       event.preventDefault();
 
       if (actionType === 'INTERACT') {
@@ -91,7 +92,7 @@ function NavScene() {
           className="nav-scene__character"
           style={{
             left: `${(state.x / NAV_SCENE_CONFIG.sceneWidth) * 100}%`,
-            bottom: `${(state.y / displayMaxY) * 100}%`,
+            bottom: `${((state.y + jumpOffset) / displayMaxY) * 100}%`,
             transform: `translate(-50%, 50%) scaleX(${facing === 'left' ? -1 : 1})`,
           }}
         >
@@ -100,9 +101,9 @@ function NavScene() {
             src={Stonemonkey}
             alt="Nav Character"
             style={{
-              width: `${(CHARACTER_SHEET_WIDTH / CHARACTER_FRAME_SIZE) * 100}%`,
-              left: `${-(frame.x / CHARACTER_FRAME_SIZE) * 100}%`,
-              top: `${-(frame.y / CHARACTER_FRAME_SIZE) * 100}%`,
+              width: `${(CHARACTER_SHEET_WIDTH / CHARACTER_FRAME_WIDTH) * 100}%`,
+              left: `${-(frame.x / CHARACTER_FRAME_WIDTH) * 100}%`,
+              top: `${-(frame.y / CHARACTER_FRAME_HEIGHT) * 100}%`,
             }}
           />
         </div>
@@ -119,8 +120,9 @@ function NavScene() {
 
       <p className="nav-scene__hint">
         Move with the arrow keys or WASD
-        {ivyHere && !state.isClimbing ? ' — press ↑ to climb the Ivy' : ''}.
-        Press Enter or Space to interact.
+        {ivyHere && !state.isClimbing ? ' — press E to grab the Ivy' : ''}
+        {state.isClimbing ? ' — press E to let go and fall' : ''}.
+        Press Enter to interact. Press Space to jump.
       </p>
     </div>
   );

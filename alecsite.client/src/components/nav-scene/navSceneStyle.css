@@ -54,7 +54,7 @@
 .nav-scene__character {
     position: absolute;
     width: 2%;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 85 / 80;
     overflow: hidden;
     pointer-events: none;
 }

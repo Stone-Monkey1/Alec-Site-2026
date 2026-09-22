@@ -2,6 +2,23 @@
     --main-color: #46f805;
     --secondary-color: #0d0058;
 }
+
+html {
+    background-color: var(--secondary-color)
+}
+
+h1, h2, h3, h4, p, li, a {
+    color: var(--main-color);
+}
+
+h2 {
+    font-size: 3rem;
+}
+
+h3 {
+    font-size: 2.7rem;
+}
+
 p, li, a {
     font-size: 2.2rem;
 }
@@ -52,4 +69,11 @@ p, li, a {
 
 .p-5pct {
     padding: 5%;
+}
+
+.separator-div-full {
+    padding: 10px;
+    border-bottom: solid var(--main-color);
+    margin: auto;
+    width: 95%;
 }
