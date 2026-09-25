@@ -68,6 +68,10 @@ const HORIZONTAL_FACING = { MOVE_LEFT: 'left', MOVE_RIGHT: 'right' };
 // means movement keeps advancing regardless of what the OS does with
 // repeat events. The loop pauses (not stops) during a jump — jump's own
 // momentum ticks own horizontal movement while airborne.
+//
+// The hook listens to the keyboard itself, and also returns pressMove /
+// releaseMove / jump so non-keyboard input (TouchControls) can drive the
+// exact same held-action state.
 export function useCharacterAnimation(x, y, isClimbing, isFalling, dispatch) {
   const [frame, setFrame] = useState({ x: IDLE_FRAME_X[0], y: IDLE_ROW_Y });
   const [facing, setFacing] = useState('right');
@@ -249,6 +253,28 @@ export function useCharacterAnimation(x, y, isClimbing, isFalling, dispatch) {
     };
   }, [isFalling]);
 
+  // Input entry points shared by every input source — the keyboard
+  // handlers below and the on-screen TouchControls both go through these,
+  // so a held D-pad button behaves exactly like a held arrow key.
+  function pressMove(actionType) {
+    if (HORIZONTAL_FACING[actionType]) setFacing(HORIZONTAL_FACING[actionType]);
+    if (heldActionsRef.current.has(actionType)) return;
+    if (heldActionsRef.current.size === 0) {
+      startWalking();
+      startMoveLoop();
+      dispatchRef.current({ type: actionType }); // immediate first step, don't wait for the first tick
+    }
+    heldActionsRef.current.add(actionType);
+  }
+
+  function releaseMove(actionType) {
+    heldActionsRef.current.delete(actionType);
+    if (heldActionsRef.current.size === 0) {
+      stopMoveLoop();
+      stopMoving();
+    }
+  }
+
   useEffect(() => {
     function handleKeyDown(event) {
       if (event.key === ' ') {
@@ -259,23 +285,13 @@ export function useCharacterAnimation(x, y, isClimbing, isFalling, dispatch) {
       const actionType = KEY_ACTIONS[event.key];
       if (!MOVE_ACTIONS.has(actionType)) return;
       event.preventDefault();
-      if (HORIZONTAL_FACING[actionType]) setFacing(HORIZONTAL_FACING[actionType]);
-      if (heldActionsRef.current.size === 0) {
-        startWalking();
-        startMoveLoop();
-        dispatchRef.current({ type: actionType }); // immediate first step, don't wait for the first tick
-      }
-      heldActionsRef.current.add(actionType);
+      pressMove(actionType);
     }
 
     function handleKeyUp(event) {
       const actionType = KEY_ACTIONS[event.key];
       if (!MOVE_ACTIONS.has(actionType)) return;
-      heldActionsRef.current.delete(actionType);
-      if (heldActionsRef.current.size === 0) {
-        stopMoveLoop();
-        stopMoving();
-      }
+      releaseMove(actionType);
     }
 
     function handleBlur() {
@@ -322,5 +338,5 @@ export function useCharacterAnimation(x, y, isClimbing, isFalling, dispatch) {
     }
   }, [x, y]);
 
-  return { frame, facing, jumpOffset };
+  return { frame, facing, jumpOffset, pressMove, releaseMove, jump: playJump };
 }

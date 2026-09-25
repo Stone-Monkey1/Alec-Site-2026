@@ -68,8 +68,16 @@
     grid-template-rows: 1fr;
 }
 
-.projects-menu__description {
+.projects-menu__content {
     overflow: hidden;
+}
+
+.projects-menu__description,
+.projects-menu__links {
     margin: 0;
     padding: 0 5%;
+}
+
+.projects-menu__links {
+    padding-top: 1rem;
 }

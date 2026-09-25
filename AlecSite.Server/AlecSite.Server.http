@@ -1,6 +1,10 @@
 @AlecSite.Server_HostAddress = http://localhost:5094
 
-GET {{AlecSite.Server_HostAddress}}/weatherforecast/
+GET {{AlecSite.Server_HostAddress}}/api/projects
 Accept: application/json
+
+###
+
+GET {{AlecSite.Server_HostAddress}}/api/health
 
 ###

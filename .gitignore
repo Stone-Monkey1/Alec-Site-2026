@@ -12,6 +12,11 @@ node_modules/
 dist/
 build/
 
+# SQLite
+*.db
+*.db-shm
+*.db-wal
+
 # Env / secrets
 *.env
 .env.local

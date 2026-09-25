@@ -5,8 +5,17 @@
 .nav-scene__viewport {
     position: relative;
     width: 100%;
-    aspect-ratio: 1536 / 256;
+    aspect-ratio: 1536 / 256; /* overridden inline by the camera; this is the zoom-1 value */
     overflow: hidden;
+}
+
+.nav-scene__world {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    will-change: transform;
 }
 
 .nav-scene__background {
@@ -39,6 +48,12 @@
 
 }
 
+/* The prompt names the same Destination right above the Nav Character, so
+   hide the Hotspot's own label instead of letting the two overlap. */
+.nav-scene__hotspot--active .nav-scene__hotspot-label {
+    visibility: hidden;
+}
+
 .nav-scene__hotspot-label {
     position: absolute;
     bottom: 100%;
@@ -67,10 +82,8 @@
 }
 
 .nav-scene__prompt {
-    position: absolute;
-    bottom: 100%;
-    transform: translateX(-50%);
-    margin-bottom: 0.5rem;
+    position: absolute; /* vertical position and horizontal anchor set inline, relative to the Nav Character */
+    z-index: 1;
     background: rgba(13, 0, 88, 0.9);
     color: #46f805;
     padding: 0.25rem 0.6rem;
@@ -87,4 +100,86 @@
     color: #b7c2b0;
     background: #0d0058;
     text-align: center;
+}
+
+/* ---- Touch controls ----
+   Shown only on touch-first devices (no hover, coarse pointer). Touch
+   laptops report a fine pointer + hover, so they keep the keyboard hint. */
+
+.nav-touch,
+.nav-scene__touch-only {
+    display: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .nav-scene__keyboard-only {
+        display: none;
+    }
+
+    .nav-scene__touch-only {
+        display: inline;
+    }
+
+    .nav-touch {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 1rem;
+        background: #0d0058;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+    }
+}
+
+.nav-touch__dpad {
+    display: grid;
+    grid-template-columns: repeat(3, 3rem);
+    grid-template-rows: repeat(3, 3rem);
+    gap: 0.25rem;
+}
+
+.nav-touch__dpad-up { grid-area: 1 / 2; }
+.nav-touch__dpad-left { grid-area: 2 / 1; }
+.nav-touch__dpad-right { grid-area: 2 / 3; }
+.nav-touch__dpad-down { grid-area: 3 / 2; }
+
+.nav-touch__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-touch__button {
+    min-width: 3rem;
+    min-height: 3rem;
+    padding: 0 1rem;
+    border: 2px solid #46f805;
+    border-radius: 8px;
+    background: rgba(70, 248, 5, 0.08);
+    color: #46f805;
+    font: inherit;
+    font-size: 1rem;
+    touch-action: none; /* no double-tap zoom or scroll while holding a button */
+}
+
+.nav-touch__dpad-button {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+}
+
+.nav-touch__button:active:not(:disabled) {
+    background: rgba(70, 248, 5, 0.35);
+}
+
+.nav-touch__button:disabled {
+    opacity: 0.35;
+}
+
+.nav-touch__button--primary:not(:disabled) {
+    background: #46f805;
+    color: #0d0058;
+    font-weight: bold;
 }
