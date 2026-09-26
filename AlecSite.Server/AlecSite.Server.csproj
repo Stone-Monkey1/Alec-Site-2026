@@ -22,7 +22,9 @@
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.12" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!-- Visual Studio's link to the client project. The Docker build compiles
+       the client separately and drops it into wwwroot, so it skips this. -->
+  <ItemGroup Condition="'$(ExcludeClientProject)' != 'true'">
     <ProjectReference Include="..\alecsite.client\alecsite.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>

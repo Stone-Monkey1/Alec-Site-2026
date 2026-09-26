@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { KEY_ACTIONS, MOVE_ACTIONS, NAV_SCENE_CONFIG } from './navSceneModel';
+import { shouldIgnoreKey } from './shouldIgnoreKey';
 import {
   IDLE_ROW_Y,
   WALK_ROW_Y,
@@ -277,6 +278,7 @@ export function useCharacterAnimation(x, y, isClimbing, isFalling, dispatch) {
 
   useEffect(() => {
     function handleKeyDown(event) {
+      if (shouldIgnoreKey(event)) return;
       if (event.key === ' ') {
         event.preventDefault();
         playJump();

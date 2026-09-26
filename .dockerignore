@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/dist/
+**/*.db*
+.git/
+.vs/
+.agents/
+.scratch/
+docs/

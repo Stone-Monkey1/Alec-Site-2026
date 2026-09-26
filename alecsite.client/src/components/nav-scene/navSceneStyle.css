@@ -183,3 +183,27 @@
     color: #0d0058;
     font-weight: bold;
 }
+
+.nav-scene__links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.5rem;
+    padding: 0.4rem 1rem;
+    background: #0d0058;
+}
+
+.nav-scene__links a {
+    color: #b7c2b0;
+    font-size: 0.85rem;
+}
+
+.nav-scene__links a.active {
+    color: #46f805;
+    text-decoration: none;
+}
+
+.nav-scene__links a:focus-visible {
+    outline: 2px solid #46f805;
+    outline-offset: 2px;
+}

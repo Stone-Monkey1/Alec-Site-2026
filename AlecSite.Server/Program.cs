@@ -43,7 +43,12 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+// In production, Cloudflare terminates HTTPS in front of the container and
+// forwards plain HTTP, so there's no HTTPS port here to redirect to.
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthorization();
 

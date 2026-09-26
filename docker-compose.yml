@@ -1,0 +1,20 @@
+# Production: the site plus a Cloudflare Tunnel that connects it to your
+# domain. No ports are opened on the host; cloudflared dials out to
+# Cloudflare, which handles HTTPS and forwards requests to http://web:8080.
+#
+#   1. Put your tunnel token in a .env file next to this one:
+#        TUNNEL_TOKEN=eyJ...
+#   2. docker compose up -d --build  (or create a Project in Synology Container Manager)
+services:
+  web:
+    build: .
+    restart: unless-stopped
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?Set TUNNEL_TOKEN in .env}
+    restart: unless-stopped
+    depends_on:
+      - web

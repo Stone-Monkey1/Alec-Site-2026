@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import Forest from '../../assets/Forest.png';
 import Stonemonkey from '../../assets/Stonemonkey.png';
 import {
@@ -14,6 +14,7 @@ import {
 import { CHARACTER_SHEET_WIDTH, CHARACTER_FRAME_WIDTH, CHARACTER_FRAME_HEIGHT } from './characterSprite';
 import { useCharacterAnimation } from './useCharacterAnimation';
 import TouchControls from './TouchControls';
+import { shouldIgnoreKey } from './shouldIgnoreKey';
 import { useNavCamera, SCENE_IMAGE_HEIGHT } from './useNavCamera';
 import './navSceneStyle.css';
 
@@ -23,6 +24,10 @@ import './navSceneStyle.css';
 const CHARACTER_HALF_HEIGHT_PCT = (0.02 * (NAV_SCENE_CONFIG.sceneWidth / SCENE_IMAGE_HEIGHT) * (80 / 85) * 100) / 2;
 const PROMPT_GAP_PCT = 2;
 const PROMPT_FLIP_ABOVE_PCT = 65; // above this height there's no room for the prompt overhead
+
+const PLAIN_LINKS = [...NAV_SCENE_CONFIG.hotspots]
+  .filter((hotspot) => !hotspot.secret)
+  .sort((a, b) => (a.path === '/' ? -1 : b.path === '/' ? 1 : 0));
 
 function reducer(state, action) {
   return navSceneReducer(state, action, NAV_SCENE_CONFIG);
@@ -51,6 +56,7 @@ function NavScene() {
 
   useEffect(() => {
     function handleKeyDown(event) {
+      if (shouldIgnoreKey(event)) return;
       const actionType = KEY_ACTIONS[event.key];
       if (!actionType || MOVE_ACTIONS.has(actionType)) return; // held movement is dispatched by useCharacterAnimation's own timer
       event.preventDefault();
@@ -187,6 +193,16 @@ function NavScene() {
         {state.isClimbing ? ' — press E to let go and fall' : ''}.
         Press Enter to interact. Press Space to jump.
       </p>
+
+      {/* Plain links for anyone who'd rather not play: screen readers,
+          visitors in a hurry. Built from the same Hotspots as the scene. */}
+      <nav className="nav-scene__links" aria-label="Site">
+        {PLAIN_LINKS.map((hotspot) => (
+          <NavLink key={hotspot.id} to={hotspot.path} end>
+            {hotspot.label}
+          </NavLink>
+        ))}
+      </nav>
     </div>
   );
 }

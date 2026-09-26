@@ -18,7 +18,7 @@ public static class ProjectSeed
                 Technology = "Python",
                 Status = ProjectStatus.Completed,
                 Description =
-                    "This project pulled daily government contracts via one of the USAspending.gov APIs. It would look through every contract and save the information of contracts awarded that exceeded $5,000,000. It then checked to see whether the company awarded the contract was publicly traded. It then purchased stock based off of a scoring algorithm. The hypothesis was big contract awards would affect the price of the stock in the following days. I then mounted the program on my personal server. I ran it for a few months. I was not able to find a correlation to support my hypothesis.",
+                    "This project pulled daily government contracts via one of the USAspending.gov APIs. It would look through every contract and save the information of contracts awarded that exceeded $500,000. It then checked to see whether the company awarded the contract was publicly traded. It then purchased stock based off of a scoring algorithm. The hypothesis was big contract awards would affect the price of the stock in the following days. I then mounted the program on my personal server. I ran it for a few months. I was not able to find a correlation to support my hypothesis.",
                 Links = [new() { Label = "USAspending.gov", Url = "https://www.usaspending.gov/" }],
             },
             new()
